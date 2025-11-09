@@ -101,8 +101,24 @@ const Header = ({onSearch = () =>{}}) => {
             </button>
             {menuOpen &&(
                 <div className={headerStyles.mobileMenu}>
+                    <nav className={headerStyles.mobileNav}>
                     <button className={headerStyles.mobileNavButton}>Live</button>
+                       <button className={headerStyles.mobileNavButton}>Fixtures</button>
+                          <button className={headerStyles.mobileNavButton}>Teams</button>
+                </nav>
+                <div className={headerStyles.mobileAuthContainer}>
+                    <button className={`${headerStyles.mobileAuthButton} ${headerStyles.mobileLogin}`}>
+                        Log In
+
+                    </button>
+                     <button className={`${headerStyles.mobileAuthButton} ${headerStyles.mobileSignup}`}>
+                        Sign up
+
+                    </button>
+
                 </div>
+                </div>
+
             )}
 
                     </div>
