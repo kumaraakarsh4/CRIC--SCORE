@@ -220,7 +220,11 @@ const LiveMatch = (onselect) => {
 
             </div>
             <div className='flex items-center gap-3'>
+                {lastUpdated && <div className={liveMatchStyles.subtitle}>Last:{lastUpdated.toLocaleTimeString()}</div>}
+                <button onClick={fetchLive} className={liveMatchStyles.refreshButton} disabled={loading}>
+                    {loading?"Refreshing...." : "Refresh"}
 
+                </button>
             </div>
             </div>
 

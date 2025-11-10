@@ -23,6 +23,12 @@ const Home = () => {
     transformStyle: 'preserve-3d',
     WebkitTransformStyle: 'preserve-3d',
   };
+  function onSelectMatch(id) {
+    const s = id != null ? String(id) : null;
+    setSelectedMatch(s);
+    const el = document.getElementById('match-detail');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
   return (
     <div className={homeStyles.root}>
         <div className={homeStyles.blob1}
