@@ -1,4 +1,5 @@
 import React from 'react'
+import { liveMatchStyles,pickColors,getGradientStyle } from '../assets/dummyStyles'
 
 const LiveMatch = () => {
   return (

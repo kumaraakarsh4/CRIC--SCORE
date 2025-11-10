@@ -1,4 +1,4 @@
-import React , {useState} from 'react'
+import React , {useState,useRef} from 'react'
 import {homeStyles} from "../assets/dummyStyles"
 import Header from '../components/Header'
 import Footer from '../components/Footer';
@@ -129,7 +129,7 @@ const Home = () => {
             <div className="text-sm text-rose-600">{liveError}</div>
               
               ): (
-                <LiveMatch matches= {liveList} onselect = {(id)=>onselectMatch(id)} selectedMatch={selectedMatch}
+                <LiveMatch matches= {liveList} onselect = {(id)=>onselectMatch(id)} selectedMatch={selectedMatch}/>
               )}
               </div> 
 
