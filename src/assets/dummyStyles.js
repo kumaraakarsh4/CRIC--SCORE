@@ -520,8 +520,8 @@ export const homeStyles = {
 
   // Hero buttons
   heroButtons: "mt-6 flex flex-wrap gap-3 justify-center md:justify-start",
-  primaryButton: "px-5 py-3 rounded-full bg-white text-indigo-700 font-medium shadow hover:scale-[1.01] transform transition",
-  secondaryButton: "px-5 py-3 rounded-full bg-white/10 border border-white/25 text-white text-sm hover:bg-white/20 transition",
+  primaryButton: "px-5 py-3 rounded-full bg-white text-indigo-700 font-medium shadow hover:scale-[1.04] transform transition",
+  secondaryButton: "px-5 py-3 rounded-full bg-white/10 border border-white/25 text-white text-sm hover:scale-[1.04] bg-white/20 transition",
 
   // Hero features
   heroFeatures: "mt-6 hidden md:flex gap-4 text-sm text-white/90",
