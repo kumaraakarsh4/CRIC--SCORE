@@ -1,10 +1,10 @@
-import React,{useState} from 'react'
+import React,{useState,useEffect} from 'react'
 import { liveMatchStyles,pickColors,getGradientStyle, homeStyles } from '../assets/dummyStyles'
 import { getLiveMatches} from '../api/cricApi';
 import Loader from './Loader';
 import {flagForTeamName} from './Flag';
 
-const LiveMatch = (onselect) => {
+const LiveMatch = ({onselect}) => {
      const [matches, setMatches] = useState([]);
   const [raw, setRaw] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -249,10 +249,10 @@ const LiveMatch = (onselect) => {
             Error : {error}
           </div>
 
-        ): matches.length > 0(
+        ): matches.length > 0 ? (
           <div className={liveMatchStyles.matchesGrid}>
             {matches.map((m)=>(
-              <div className={m.id} role='button' tabIndex={0} onClick={()=> onselect && onselect(m.id)}
+              <div key={m.id} role='button' tabIndex={0} onClick={()=> onselect && onselect(m.id)}
               onKeyDown={(e)=>{
              if(e.key=== 'Enter' || e.key===" ")
               onselect && onselect(m.id)
@@ -261,12 +261,60 @@ const LiveMatch = (onselect) => {
                 <div className={liveMatchStyles.matchCardInner}>
                   <div className={liveMatchStyles.matchHeader}>
                     <div className={liveMatchStyles.matchStatus}>
-                      
+                      {m.status || 'Match'}
+
+                    </div>
+                    <div className={liveMatchStyles.matchTime}>
+                      {m.time ? m.time.split(",")[0]:""}
 
                     </div>
 
                   </div>
+                   <div className={liveMatchStyles.teamsContainer}>
+                  <div className={liveMatchStyles.teamContainer}>
+                    <FlagAndLabel flagObj={m.teamA.flag} fallbackLabel={m.teamA.name} />
+                    <div className="min-w-0">
+                      <div className={liveMatchStyles.teamName}>{m.teamA.name}</div>
+                      <div className={liveMatchStyles.teamScore}>{m.teamA.score || ''}</div>
+                    </div>
+                  </div>
 
+                  <div className={liveMatchStyles.vsText}>vs</div>
+
+                  <div className={liveMatchStyles.teamContainerReversed}>
+                    <div className="text-right min-w-0">
+                      <div className={liveMatchStyles.teamName}>{m.teamB.name}</div>
+                      <div className={liveMatchStyles.teamScore}>{m.teamB.score || ''}</div>
+                    </div>
+                    <FlagAndLabel flagObj={m.teamB.flag} fallbackLabel={m.teamB.name} />
+                  </div>
+                </div>
+                <div className={liveMatchStyles.matchFooter}>
+                  <div className='flex items-center gap-3'>
+                    <button onClick={(e)=>{
+                      e.stopPropagation();
+                      onselect && onselect(m.id);
+                      
+
+                    }}className={liveMatchStyles.detailsButton}>
+                      Details
+
+                    </button>
+                    <div className={liveMatchStyles.matchId}>
+                   {m.id}
+                    </div>
+                    <div className={liveMatchStyles.venue}>
+                      {m.venue || ''}
+
+                    </div>
+
+                  </div>
+                     <div
+                className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                style={{ boxShadow: '0 6px 20px rgba(59,130,246,0.12)' }}
+              />
+
+                </div>
                 </div>
 
               
@@ -276,6 +324,19 @@ const LiveMatch = (onselect) => {
 
           </div>
 
+        ) : (
+          <div className={liveMatchStyles.noMatchesContainer}>
+            <div className='mb-3'>
+              No parsed live matches. Raw api for debugging:
+
+            </div>
+            <pre className={liveMatchStyles.rawDataPre}>
+              {JSON.stringify(raw ?? "No data",null,2)}
+
+            </pre>
+
+          </div>
+          
         )}
 
     </div>
