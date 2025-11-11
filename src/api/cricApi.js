@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { data } from 'react-router-dom';
 
 const BASE = 'https://cricbuzz-cricket.p.rapidapi.com';
 const RAPIDAPI_KEY = import.meta.env.VITE_RAPIDAPI_KEY || '897add574dmsh57df90fe45ebe79p1e74c4jsn3e516479ed4e';
@@ -13,12 +14,24 @@ const api = axios.create({
   timeout: 20000,
 });
 async function safeGet(path , opts = {}){
-    try(
+    try{
+      const resp = await api.get(path,opts);
+      console.log('[cricApi] GET', path,'status',resp.status);
+      return{data: resp.data, rawResponse:resp};
+      
 
-    )
-    catch (error)(
+    }
+    catch (err){
+      console.err('[cricApi] GET error' , path,err?.response?.status,err?.message);
+      const error = new Error(err?.response?.data?.message || err?.message || 'Network Error');
+      error.status = err?.response?.status;
+      error.response= err?.response?.data;
+      throw error; 
+
+
+    }
         
-    )
+    
 }
 // Matches
 export async function getLiveMatches() {

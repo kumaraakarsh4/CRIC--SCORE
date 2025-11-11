@@ -1,5 +1,8 @@
 import React,{useState} from 'react'
 import { liveMatchStyles,pickColors,getGradientStyle, homeStyles } from '../assets/dummyStyles'
+import { getLiveMatches} from '../api/cricApi';
+import Loader from './Loader';
+import {flagForTeamName} from './Flag';
 
 const LiveMatch = (onselect) => {
      const [matches, setMatches] = useState([]);
@@ -229,6 +232,51 @@ const LiveMatch = (onselect) => {
             </div>
 
         </div>
+        {quotaMode &&(
+       <div className={liveMatchStyles.quotaAlert}>
+        Quota may be exceeded- showing cached/simple data.
+
+       </div>
+        )}
+
+        {loading && matches.length === 0 ?(
+          <div className={liveMatchStyles.loadingContainer}>
+            <Loader message='Loading live matches....'/>
+
+          </div>
+        ) : error ? (
+          <div className={liveMatchStyles.errorContainer}>
+            Error : {error}
+          </div>
+
+        ): matches.length > 0(
+          <div className={liveMatchStyles.matchesGrid}>
+            {matches.map((m)=>(
+              <div className={m.id} role='button' tabIndex={0} onClick={()=> onselect && onselect(m.id)}
+              onKeyDown={(e)=>{
+             if(e.key=== 'Enter' || e.key===" ")
+              onselect && onselect(m.id)
+
+              }} className={liveMatchStyles.matchCard}>
+                <div className={liveMatchStyles.matchCardInner}>
+                  <div className={liveMatchStyles.matchHeader}>
+                    <div className={liveMatchStyles.matchStatus}>
+                      
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              
+
+              </div>
+            ))}
+
+          </div>
+
+        )}
 
     </div>
   )
