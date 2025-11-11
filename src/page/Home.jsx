@@ -7,6 +7,7 @@ import ball from '../assets/ball.png';
 import Loader from '../components/Loader';
 import LiveMatch from '../components/LiveMatch';
 import { getLiveMatches } from '../api/cricApi';
+import UpcomingMatches from '../components/UpcomingMatches';
 const Home = () => {
     const [selectedMatch, setSelectedMatch] = useState(null);
   const [teamIdInput, setTeamIdInput] = useState('');
@@ -250,6 +251,15 @@ const tryExtract = (resp) => {
                 <LiveMatch matches= {liveList} onselect = {(id)=>onselectMatch(id)} selectedMatch={selectedMatch}/>
               )}
               </div> 
+              <div id='upcoming'>
+                <div className={homeStyles.sectionHeader}>
+                  <h2 className={homeStyles.sectionTitle}>Upcoming Matches</h2>
+                  <div className={homeStyles.sectionSubtitle}>Plan ahead</div>
+
+                </div>
+                <UpcomingMatches onselect={(id)=>onSelectMatch(id)}/>
+
+              </div>
 
           </div>
 

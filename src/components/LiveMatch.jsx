@@ -1,5 +1,5 @@
 import React,{useState,useEffect} from 'react'
-import { liveMatchStyles,pickColors,getGradientStyle, homeStyles } from '../assets/dummyStyles'
+import { liveMatchStyles,pickColors,getGradientStyle } from '../assets/dummyStyles'
 import { getLiveMatches} from '../api/cricApi';
 import Loader from './Loader';
 import {flagForTeamName} from './Flag';
@@ -217,8 +217,7 @@ const LiveMatch = ({onselect}) => {
 
                 </div>
                 <div className={liveMatchStyles.subtitle}>
-                    Manual refresh (no-polling) - protect quota
-
+                   
                 </div>
 
             </div>
