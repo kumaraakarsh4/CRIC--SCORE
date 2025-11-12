@@ -288,6 +288,13 @@ const Home = () => {
           </aside>
 
         </section>
+        <section id='match-detail' className={homeStyles.detailsSection}>
+          <div className={homeStyles.detailsCard}>
+            <div className={homeStyles.detailsTitle}>Match Detail</div>
+
+          </div>
+
+        </section>
       </main>
       <Footer /> {/* Added Footer for completeness, assuming it's used */}
     </div>
