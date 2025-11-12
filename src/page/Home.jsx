@@ -8,15 +8,19 @@ import Loader from '../components/Loader';
 import LiveMatch from '../components/LiveMatch';
 import { getLiveMatches } from '../api/cricApi';
 import UpcomingMatches from '../components/UpcomingMatches';
+import Scoreboard from '../components/Scoreboard';
+
 const Home = () => {
-    const [selectedMatch, setSelectedMatch] = useState(null);
+  const [selectedMatch, setSelectedMatch] = useState(null);
   const [teamIdInput, setTeamIdInput] = useState('');
   const [teamId, setTeamId] = useState(null);
   const [loadingInitial, setLoadingInitial] = useState(true);
   const [liveList, setLiveList] = useState([]);
   const [liveError, setLiveError] = useState(null);
-   const stylesInjected = useRef(false);
-    useEffect(() => {
+  const stylesInjected = useRef(false);
+
+  // --- External Font Injection ---
+  useEffect(() => {
     const id = 'poppins-google-font';
     if (document.getElementById(id)) return;
     const link = document.createElement('link');
@@ -25,7 +29,9 @@ const Home = () => {
     link.href = 'https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap';
     document.head.appendChild(link);
   }, []);
-const tryExtract = (resp) => {
+
+  // --- Data Transformation Functions ---
+  const tryExtract = (resp) => {
     if (!resp) return null;
     if (resp.data) return resp.data;
     if (resp.rawResponse && resp.rawResponse.data) return resp.rawResponse.data;
@@ -36,7 +42,8 @@ const tryExtract = (resp) => {
     }
     return resp;
   };
-    const flattenLiveMatches = (payload) => {
+  
+  const flattenLiveMatches = (payload) => {
     if (!payload) return [];
 
     const out = [];
@@ -74,8 +81,6 @@ const tryExtract = (resp) => {
     return deduped;
   };
 
-
-  
   const normalizeMatchId = (id) => {
     if (id === null || id === undefined) return null;
     if (typeof id === 'number') return id;
@@ -83,7 +88,24 @@ const tryExtract = (resp) => {
     const digits = s.match(/\d{2,}/);
     return digits ? digits[0] : s;
   };
-// --- fetch initial live list once (no polling) ---
+
+  // --- Handler Functions ---
+  // Consolidated the duplicate onSelectMatch and viewTeam functions
+  const onSelectMatch = useCallback((id) => {
+    const s = id != null ? String(id) : null;
+    setSelectedMatch(s);
+    const el = document.getElementById('match-detail');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, []); // Added useCallback for stability, though not strictly necessary here
+
+  const viewTeam = useCallback(() => {
+    if (!teamIdInput) return;
+    setTeamId(teamIdInput.trim());
+    const el = document.getElementById('team-section');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [teamIdInput]); // Added useCallback for stability
+
+  // --- Fetch Initial Live List (no polling) ---
   const fetchInitialLive = useCallback(async () => {
     setLoadingInitial(true);
     setLiveError(null);
@@ -92,45 +114,20 @@ const tryExtract = (resp) => {
       const payload = tryExtract(resp);
       const matches = flattenLiveMatches(payload);
       setLiveList(matches);
+      // Automatically select the first live match if available
       if (matches && matches.length > 0) setSelectedMatch(String(matches[0].id));
     } catch (err) {
       console.warn('Auto-select live match failed', err);
-      setLiveError(err?.message || 'Failed to load live matches');
+      // Capture detailed error message if available
+      setLiveError(err?.message || 'Failed to load live matches. Check your API key and network connection.');
     } finally {
       setLoadingInitial(false);
     }
   }, []);
 
-  useEffect(() => { fetchInitialLive(); }, [fetchInitialLive]);
-
-    function onSelectMatch(id) {
-    const s = id != null ? String(id) : null;
-    setSelectedMatch(s);
-    const el = document.getElementById('match-detail');
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-
-  function viewTeam() {
-    if (!teamIdInput) return;
-    setTeamId(teamIdInput.trim());
-    const el = document.getElementById('team-section');
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-
-  // perspective parent for translateZ
-    function onSelectMatch(id) {
-    const s = id != null ? String(id) : null;
-    setSelectedMatch(s);
-    const el = document.getElementById('match-detail');
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-
-  function viewTeam() {
-    if (!teamIdInput) return;
-    setTeamId(teamIdInput.trim());
-    const el = document.getElementById('team-section');
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
+  useEffect(() => { 
+    fetchInitialLive(); 
+  }, [fetchInitialLive]);
 
   // perspective parent for translateZ
   const heroWrapperStyle = {
@@ -142,131 +139,159 @@ const tryExtract = (resp) => {
     transformStyle: 'preserve-3d',
     WebkitTransformStyle: 'preserve-3d',
   };
+
   return (
     <div className={homeStyles.root}>
-        <div className={homeStyles.blob1}
+      {/* Background Blobs */}
+      <div className={homeStyles.blob1}
         style={{
-            background: homeStyles.blob1Gradient,
+          background: homeStyles.blob1Gradient,
         }}>
-
-        </div>
-
-         <div className={homeStyles.blob2}
+      </div>
+      <div className={homeStyles.blob2}
         style={{
-            background: homeStyles.blob2Gradient,
+          background: homeStyles.blob2Gradient,
         }}>
+      </div>
 
-        </div>
-        <div className={homeStyles.headerContainer}>
-            <Header onsearch={(q)=>console.log('search' , q)}
-            />
+      <div className={homeStyles.headerContainer}>
+        <Header onsearch={(q) => console.log('search', q)} />
+      </div>
 
-        </div>
-        <main className={homeStyles.main}>
-          <section className={homeStyles.section}>
-            <div className={homeStyles.heroWrapper} style={heroWrapperStyle}>
-              <div className={homeStyles.heroBox} style={heroBoxStyle}>
-                <div className={homeStyles.heroSpotlight} style={{background: homeStyles.heroSpotlightGradient}}>
-
-                </div>
-                <div className={homeStyles.heroContent}>
-                  <div className={homeStyles.heroText}>
-                    <h1 className={homeStyles.heroTitle} style={{fontFamily:"'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial"}}>
-                  Follow every match <br /> Real Time score , classy insights.
-                    </h1>
-                    <p className={homeStyles.heroSubtitle}>
-                      Live scorecards , upcoming fixtures and match analytics - 
-                      fast live scores schedule  Tracking and compact analytics.
-
-                    </p>
-                    <div className={homeStyles.heroButtons}>
-                      <button onClick={()=> document.getElementById('live')?.scrollIntoView({behavior:'smooth'})
-
-                      } className={homeStyles.primaryButton}>
-                        View Live matches
-
-                      </button>
-                       <button onClick={()=> document.getElementById('matchdetails')?.scrollIntoView({behavior:'smooth'})
-
-                      } className={homeStyles.secondaryButton}>
-                        Quick details
-
-                      </button>
-
+      <main className={homeStyles.main}>
+        {/* Hero Section */}
+        <section className={homeStyles.section}>
+          <div className={homeStyles.heroWrapper} style={heroWrapperStyle}>
+            <div className={homeStyles.heroBox} style={heroBoxStyle}>
+              <div className={homeStyles.heroSpotlight} style={{ background: homeStyles.heroSpotlightGradient }}>
+              </div>
+              <div className={homeStyles.heroContent}>
+                <div className={homeStyles.heroText}>
+                  <h1 className={homeStyles.heroTitle} style={{ fontFamily: "'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial" }}>
+                    Follow every match <br /> Real Time score , classy insights.
+                  </h1>
+                  <p className={homeStyles.heroSubtitle}>
+                    Live scorecards , upcoming fixtures and match analytics -
+                    fast live scores schedule Tracking and compact analytics.
+                  </p>
+                  <div className={homeStyles.heroButtons}>
+                    <button onClick={() => document.getElementById('live')?.scrollIntoView({ behavior: 'smooth' })} 
+                      className={homeStyles.primaryButton}>
+                      View Live matches
+                    </button>
+                    <button onClick={() => document.getElementById('match-detail')?.scrollIntoView({ behavior: 'smooth' })} 
+                      className={homeStyles.secondaryButton}>
+                      Quick details
+                    </button>
+                  </div>
+                  <div className={homeStyles.heroFeatures}>
+                    <div className={homeStyles.featureTag}>
+                      Live Scorecards
                     </div>
-                    <div className={homeStyles.heroFeatures}>
-                      <div className={homeStyles.featureTag}>
-                        Live Scorecards
-
-                      </div>
-                       <div className={homeStyles.featureTag}>
-                        Match Details
-
-                      </div>
-                       <div className={homeStyles.featureTag}>
-                        Team Stats
-
-                      </div>
-
-
-
+                    <div className={homeStyles.featureTag}>
+                      Match Details
+                    </div>
+                    <div className={homeStyles.featureTag}>
+                      Team Stats
                     </div>
                   </div>
-
                 </div>
-                
-            {/* subtle outer border/shadow */}
-            <div className={homeStyles.heroShadow} style={{ boxShadow: '0 8px 30px rgba(14, 30, 50, 0.06)', borderRadius: '24px' }} />
-    
-
-
               </div>
-              <img src={bat} alt="bat" className='hero-bat' />
-                 <img src={ball} alt="ball" className='hero-ball' />
 
+              {/* subtle outer border/shadow */}
+              <div className={homeStyles.heroShadow} style={{ boxShadow: '0 8px 30px rgba(14, 30, 50, 0.06)', borderRadius: '24px' }} />
             </div>
+            <img src={bat} alt="bat" className='hero-bat' />
+            <img src={ball} alt="ball" className='hero-ball' />
+          </div>
+        </section>
 
-          </section>
-
-          {/* top-section */}
+        {/* Live and Upcoming Matches Section */}
         <section className={homeStyles.gridSection}>
           <div className={homeStyles.mainContent}>
             <div id='live' className='space-y-4'>
               <div className={homeStyles.sectionHeader}>
                 <div className={homeStyles.liveStatus}>
                   <div className={homeStyles.liveCount}>
-                    {loadingInitial?'Loading....':`${liveList.length}matches`}
-
+                    {loadingInitial ? 'Loading....' : `${liveList.length} matches`}
                   </div>
-
                 </div>
-
               </div>
-              {loadingInitial?(
-                <Loader message='Loading Live matches...' centered/>
-              ): liveError ? (
-            <div className="text-sm text-rose-600">{liveError}</div>
-              
-              ): (
-                <LiveMatch matches= {liveList} onselect = {(id)=>onselectMatch(id)} selectedMatch={selectedMatch}/>
+              {loadingInitial ? (
+                <Loader message='Loading Live matches...' centered />
+              ) : liveError ? (
+                <div className="text-sm text-rose-600">{liveError}</div>
+              ) : (
+                <LiveMatch 
+                    matches={liveList} 
+                    // FIX: Changed 'onselect' (in your original code) to 'onSelectMatch'
+                    onselect={onSelectMatch} 
+                    selectedMatch={selectedMatch} 
+                />
               )}
-              </div> 
-              <div id='upcoming'>
-                <div className={homeStyles.sectionHeader}>
-                  <h2 className={homeStyles.sectionTitle}>Upcoming Matches</h2>
-                  <div className={homeStyles.sectionSubtitle}>Plan ahead</div>
-
-                </div>
-                <UpcomingMatches onselect={(id)=>onSelectMatch(id)}/>
-
+            </div>
+            
+            <div id='upcoming'>
+              <div className={homeStyles.sectionHeader}>
+                <h2 className={homeStyles.sectionTitle}>Upcoming Matches</h2>
+                <div className={homeStyles.sectionSubtitle}>Plan ahead</div>
               </div>
-
+              <UpcomingMatches onselect={onSelectMatch} />
+            </div>
           </div>
 
+          {/* Sidebar/Quick Scoreboard */}
+          <aside className={homeStyles.sidebar}>
+            <div className={homeStyles.sidebarSticky}>
+              <div className={homeStyles.quickScoreCard}>
+                <div className={homeStyles.quickScoreHeader}>
+                  <div className={homeStyles.quickScoreTitle}>
+                    Quick Score
+                  </div>
+                  <div className={homeStyles.quickScoreStatus}>
+                    Live / Selected
+                  </div>
+                </div>
+                {loadingInitial ? (
+                  <Loader message='Loading live summary...' centered />
+                ) : !selectedMatch ? (
+                  <div className={homeStyles.quickScoreContent}>
+                    No match selected. Click any match card to load quick score.
+                  </div>
+                ) : (
+                  <div>
+                    <div className={homeStyles.quickScoreContent}>
+                      Match ID: {selectedMatch}
+                    </div>
+                    {/* Placeholder for the Match Detail Section - ID used for scrolling */}
+                    <div id="match-detail"> 
+                        <Scoreboard matchId={normalizeMatchId(selectedMatch)} />
+                    </div>
+                    <div className='mt-3 flex gap-2'>
+                      <button onClick={() => {
+                          // FIX: Changed 'match detail' to 'match-detail' for correct scrolling
+                          const el = document.getElementById('match-detail');
+                          if (el)
+                            el.scrollIntoView({
+                              behavior: 'smooth',
+                              block: 'start'
+                            });
+                        }} 
+                        className={homeStyles.quickScoreButton}>
+                        View details
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </aside>
+
         </section>
-        </main>
+      </main>
+      <Footer /> {/* Added Footer for completeness, assuming it's used */}
     </div>
   );
 };
 
-export default Home
+export default Home;

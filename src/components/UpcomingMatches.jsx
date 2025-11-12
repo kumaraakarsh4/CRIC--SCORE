@@ -7,21 +7,22 @@ import {
 } from "../assets/dummyStyles";
 import { getUpcomingMatches } from "../api/cricApi";
 import Loader from "./Loader";
+import {flagForTeamName} from "./Flag"
 
 // Assuming 'flagForTeamName' is defined elsewhere or imported if needed for the Flag component.
 // Since it's not provided, this code assumes it exists in your environment.
-const flagForTeamName = (name) => {
-  // Placeholder implementation for Flag functionality
-  return {
-    initials: name
-      .split(" ")
-      .map((s) => s[0] || "")
-      .slice(0, 2)
-      .join("")
-      .toUpperCase(),
-    label: name,
-  };
-};
+// const flagForTeamName = (name) => {
+//   // Placeholder implementation for Flag functionality
+//   return {
+//     initials: name
+//       .split(" ")
+//       .map((s) => s[0] || "")
+//       .slice(0, 2)
+//       .join("")
+//       .toUpperCase(),
+//     label: name,
+//   };
+// };
 
 const UpcomingMatches = ({ onselect }) => {
   const [groups, setGroups] = useState([]);
@@ -305,22 +306,76 @@ const UpcomingMatches = ({ onselect }) => {
                             {m.venue || ''}
                           </div>
                         </div>
+                       
+                          <div className={upcomingMatchesStyles.teamsContainer}>
+                        <div className={upcomingMatchesStyles.teamContainer}>
+                          <Flag name={m.team1.name} />
+                          <div className="min-w-0">
+                            <div className={upcomingMatchesStyles.teamName}>{m.team1.name}</div>
+                            <div className={upcomingMatchesStyles.teamStatus}>Upcoming</div>
+                          </div>
+                        </div>
+
+                        <div className={upcomingMatchesStyles.vsText}>vs</div>
+
+                        <div className={upcomingMatchesStyles.teamContainerReversed}>
+                          <div className="text-right min-w-0">
+                            <div className={upcomingMatchesStyles.teamName}>{m.team2.name}</div>
+                            <div className={upcomingMatchesStyles.teamStatus}>{m.venue || ''}</div>
+                          </div>
+                          <Flag name={m.team2.name} />
+                        </div>
                       </div>
+                      <div className={upcomingMatchesStyles.matchFooter}>
+                        <div className="flex items-center gap-3">
+                          <button onClick={(e)=>{
+                            e.stopPropagation();
+                            onselect && onselect(m.matchId);
+                          }} className={upcomingMatchesStyles.detailsButton}>
+                            Details
+
+                          </button>
+                          <div className={upcomingMatchesStyles.matchId}> 
+                            #{m.matchId}
+
+                          </div>
+
+                        </div>
+                        <div className={upcomingMatchesStyles.matchDate}>
+                          {m.time ? m.time.split(',')[0]:'TBA'}
+
+                        </div>
+
+                      </div>
+                      </div>
+
+                          {/* hover ring */}
+                    <div
+                      className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                      style={{ boxShadow: '0 8px 28px rgba(59,130,246,0.10)' }}
+                    />
+
                     </article>
                   ))}
                 </div>
               </section>
             );
           })}
-                  
+          
         </div>
       ) : (
         // <--- FIX APPLIED HERE: Added the missing else case
         <div className={upcomingMatchesStyles.noMatchesContainer}>
+          <div className="mb-3">
           No upcoming matches are currently available.
+          </div>
+          <pre className={upcomingMatchesStyles.rawDataPre}>
+            {JSON.stringify(raw ?? 'No data' , null , 2)}
+
+          </pre>
         </div>
       )}
-         {" "}
+        
     </div>
   );
 };

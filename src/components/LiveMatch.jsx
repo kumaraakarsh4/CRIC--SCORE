@@ -330,7 +330,7 @@ const LiveMatch = ({onselect}) => {
 
             </div>
             <pre className={liveMatchStyles.rawDataPre}>
-              {JSON.stringify(raw ?? "No data",null,2)}
+              {JSON.stringify(raw ?? "No data", null,2)}
 
             </pre>
 
