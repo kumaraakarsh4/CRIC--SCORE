@@ -9,6 +9,7 @@ import LiveMatch from '../components/LiveMatch';
 import { getLiveMatches } from '../api/cricApi';
 import UpcomingMatches from '../components/UpcomingMatches';
 import Scoreboard from '../components/Scoreboard';
+import MatchDetail from '../components/MatchDetail';
 
 const Home = () => {
   const [selectedMatch, setSelectedMatch] = useState(null);
@@ -290,9 +291,48 @@ const Home = () => {
         </section>
         <section id='match-detail' className={homeStyles.detailsSection}>
           <div className={homeStyles.detailsCard}>
-            <div className={homeStyles.detailsTitle}>Match Detail</div>
+            <div className={homeStyles.detailsTitle}>Match Details</div>
+            {!selectedMatch && (
+              <div className={homeStyles.quickScoreContent}>
+                No match selected. Click any match card from Live or upcoming 
+                view details
+                
+
+              </div>
+            )}
+            {selectedMatch &&(
+              <div className={homeStyles.detailsContent}>
+                <MatchDetail matchId={normalizeMatchId(selectedMatch)}/>
+                <div>
+                  <div className='text-sm font-medium text-slate-800 mb-3'>
+                    Scorecard
+
+                  </div>
+                  <Scoreboard matchId={normalizeMatchId(selectedMatch)}/>
+
+                </div>
+
+              </div>
+            )}
 
           </div>
+
+        </section>
+        <section id='team-section' className={homeStyles.teamSection}>
+          {teamId && (
+            <div className={homeStyles.teamCard}>
+              <div className={homeStyles.teamTitle}>
+                Team Preview : {teamId}
+
+              </div>
+              <div className={homeStyles.quickScoreContent}>
+                (Team detail component not included - wire to your team API
+                using teamId.)
+
+              </div>
+
+            </div>
+          )}
 
         </section>
       </main>
