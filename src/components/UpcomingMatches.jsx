@@ -1,7 +1,9 @@
-import React,{useState} from 'react'
-import { upcomingMatchesStyles,pickColors,getGradientStyle } from '../assets/dummyStyles'
+import React,{useState,useEffect} from 'react'
+import { upcomingMatchesStyles,pickColors,getGradientStyle, liveMatchStyles } from '../assets/dummyStyles'
 import { getUpcomingMatches } from '../api/cricApi'
-import { useState } from 'react'
+import Loader from './Loader';
+
+
 const UpcomingMatches = ({onselect}) => {
      const [groups, setGroups] = useState([]);
   const [raw, setRaw] = useState(null);
@@ -149,10 +151,100 @@ const UpcomingMatches = ({onselect}) => {
       </div>
     );
   }
+  if(loading && groups.length === 0){
+    return(
+      <div className={upcomingMatchesStyles.loadingContainer}>
+        <Loader message='Upcoming Matches'/>
+      </div>
+    );
+  }
+  if(error){
+    return(
+      <div className={upcomingMatchesStyles.errorContainer}>
+      Error : {error}
+      </div>
+    )
+  }
 
 
   return (
-    <div>UpcomingMatches</div>
+    <div className={upcomingMatchesStyles.container}>
+      <div className={upcomingMatchesStyles.headerContainer}>
+        <div>
+          <div className={upcomingMatchesStyles.headerTitle}>Upcoming Matches </div>
+          <div className={upcomingMatchesStyles.headerSubtitle}>Manual refresh- protect quota</div>
+        </div>
+
+      </div>
+      <div className='flex items-center gap-3'>
+        {lastUpdated && (
+          <div className={upcomingMatchesStyles.lastUpdatedText}>
+            Last : {lastUpdated.toLocaleDateString()}
+
+          </div>
+        )}
+        <button onClick={fetchUpcoming} className={upcomingMatchesStyles.refreshButton} disabled={loading}>
+          {loading ? 'Refreshing...' : 'Refresh'}
+
+        </button>
+
+      </div>
+        {quotaMode &&(
+       <div className={upcomingMatchesStyles.quotaAlert}>
+        Quota may be exceeded- showing cached/simple data.
+
+       </div>
+        )}
+
+        {groups.length > 0 ? (
+          <div className={upcomingMatchesStyles.groupsContainer}>
+            {groups.map((g , gi)=>(
+              <section  key={gi} className={upcomingMatchesStyles.seriesSection}>
+                <div className={upcomingMatchesStyles.seriesHeader}>
+                  <div>
+                    <div className={upcomingMatchesStyles.seriesTitle}>
+                  {g.title}
+                    </div>
+                    <div className={upcomingMatchesStyles.seriesMatchCount}>
+                      {g.matches.length} match{g.matches.length > 1 ? 'es' : ''}
+
+                    </div>
+                  </div>
+                  <div className={upcomingMatchesStyles.seriesLabel}>
+                    Series
+
+                  </div>
+
+                </div>
+                <div className={upcomingMatchesStyles.matchesGrid}>
+                  {g.matches.map((m) => (
+                       <article
+                    key={m.matchId}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => onSelect && onSelect(m.matchId)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onSelect && onSelect(m.matchId); }}
+                    className={upcomingMatchesStyles.matchArticle}
+                    aria-label={`Upcoming match ${m.team1.name} vs ${m.team2.name}`}
+                  >
+                    <div className={upcomingMatchesStyles.matchArticleInner}>
+                      <div className={upcomingMatchesStyles.matchHeader}>
+
+                      </div>
+
+                    </div>
+                  </article>
+                  ))}
+
+                </div>
+
+              </section>
+
+            ))}
+          </div>
+        )}
+    </div>
+    
   )
 }
 
