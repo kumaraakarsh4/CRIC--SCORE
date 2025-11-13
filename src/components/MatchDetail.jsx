@@ -1,9 +1,10 @@
-import React , {useState,useCallback} from 'react'
+import React , {useState,useCallback,useEffect} from 'react'
 import { getMatchCenter,getScard, getHscard } from '../api/cricApi'
 import { matchDetailStyles } from '../assets/dummyStyles'
 import ScoreCard from './Scorecard';
 import Scoreboard from './Scoreboard';
 import PlayerList from './PlayerList';
+import Loader from './Loader';
 
 const MatchDetail = ({matchId, className = ''}) => {
       const [center, setCenter] = useState(null);

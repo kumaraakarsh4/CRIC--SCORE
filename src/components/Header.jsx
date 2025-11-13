@@ -1,16 +1,20 @@
-// 1. CRITICAL FIX: Import useEffect
-import React, { useState, useEffect } from 'react' 
+import React, { useState, useEffect } from 'react';
 
-import { headerStyles } from '../assets/dummyStyles'
+import { headerStyles } from '../assets/dummyStyles';
 
-import logo from '../assets/logo.png'
+import logo from '../assets/logo.png';
 
 
-const Header = ({onSearch = () =>{}}) => {
-    const [menuOpen , setMenuOpen] = useState(false);
-    const [q,setQ] = useState(''); 
+const Header = ({ onSearch = () => {} }) => {
+    const [menuOpen, setMenuOpen] = useState(false);
+    const [q, setQ] = useState('');
+
+    // === 1. NEW STATE FOR SCROLL HANDLING ===
+    const [showHeader, setShowHeader] = useState(true);
+    const [lastScrollY, setLastScrollY] = useState(0);
+    // ======================================
     
-    // useEffect is now imported and works correctly
+    // Existing useEffect to load the Eczar font
     useEffect(() => {
         const id = 'eczar-google-font';
         if (document.getElementById(id)) return;
@@ -21,6 +25,34 @@ const Header = ({onSearch = () =>{}}) => {
         document.head.appendChild(link);
     }, []);
 
+    // === 2. NEW useEffect FOR SCROLL LOGIC ===
+    useEffect(() => {
+        const handleScroll = () => {
+            const currentScrollY = window.scrollY;
+            const scrollThreshold = 50; // Pixels to scroll before hiding
+
+            // Hide header if scrolling down AND past the threshold
+            if (currentScrollY > lastScrollY && currentScrollY > scrollThreshold) {
+                setShowHeader(false);
+            } 
+            // Show header if scrolling up OR near the very top of the page
+            else if (currentScrollY < lastScrollY || currentScrollY <= scrollThreshold) {
+                setShowHeader(true);
+            }
+
+            // Update the last scroll position
+            setLastScrollY(currentScrollY);
+        };
+
+        // Add the scroll event listener
+        window.addEventListener('scroll', handleScroll, { passive: true });
+
+        // Cleanup: Remove the event listener on component unmount
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, [lastScrollY]); // Depend on lastScrollY to maintain state across checks
+
 
     const handleSearch = (e) => {
         e.preventDefault(); // Prevents the default form submission and page reload
@@ -28,12 +60,17 @@ const Header = ({onSearch = () =>{}}) => {
     };
 
     return (
-        <header className={headerStyles.container}>
+        // === 3. CONDITIONAL CLASS & STYLING ===
+        // Note: For this to work, you must define a class in your CSS/headerStyles 
+        // that handles the smooth transition and the translateY transformation.
+        <header 
+            className={`${headerStyles.container} ${!showHeader ? headerStyles.scrolledDown : ''}`}
+        >
             <div className={headerStyles.innerContainer}>
                 <div className={headerStyles.mainWrapper}>
                     <div className={headerStyles.logoContainer}>
                         <div className={headerStyles.logoImage}>
-                            <img src={logo} alt="Logo" className={headerStyles.logoImg} />
+                            <img src={logo} alt="Cricscore Logo" className={headerStyles.logoImg} />
                         </div>
                         <div className={headerStyles.logoText}>
                             <div className={headerStyles.logoTitle} style={{
@@ -50,8 +87,6 @@ const Header = ({onSearch = () =>{}}) => {
                                 Search Matches
                             </label>
                             <div className='relative'>
-                                {/* 3. FIX: Changed id to 'header-search' for accessibility */}
-                                {/* 4. POTENTIAL FIX: Changed className to 'searchInput' (assuming it exists) */}
                                 <input 
                                     id='header-search' 
                                     value={q} 
@@ -77,50 +112,45 @@ const Header = ({onSearch = () =>{}}) => {
                             <button className={headerStyles.loginButton}>
                                 Log In
                             </button>
-                            {/* 2. CRITICAL FIX: Corrected typo in class name */}
                             <button className={headerStyles.signupButton}>
                                 Sign Up
                             </button>
                         </div>
                     </div>
+                    
                     {/* Mobile View */}
                     <div className={headerStyles.mobileMenuButton}>
-                         <button
-              aria-expanded={menuOpen}
-              aria-label="Open menu"
-              onClick={() => setMenuOpen((s) => !s)}
-              className={headerStyles.menuToggleButton}
-            >
-              <svg className={headerStyles.menuIcon} viewBox="0 0 24 24" fill="none" aria-hidden>
-                {menuOpen ? (
-                  <path d="M6 18L18 6M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                ) : (
-                  <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                )}
-              </svg>
-            </button>
-            {menuOpen &&(
-                <div className={headerStyles.mobileMenu}>
-                    <nav className={headerStyles.mobileNav}>
-                    <button className={headerStyles.mobileNavButton}>Live</button>
-                       <button className={headerStyles.mobileNavButton}>Fixtures</button>
-                          <button className={headerStyles.mobileNavButton}>Teams</button>
-                </nav>
-                <div className={headerStyles.mobileAuthContainer}>
-                    <button className={`${headerStyles.mobileAuthButton} ${headerStyles.mobileLogin}`}>
-                        Log In
-
-                    </button>
-                     <button className={`${headerStyles.mobileAuthButton} ${headerStyles.mobileSignup}`}>
-                        Sign up
-
-                    </button>
-
-                </div>
-                </div>
-
-            )}
-
+                           <button
+                             aria-expanded={menuOpen}
+                             aria-label="Open menu"
+                             onClick={() => setMenuOpen((s) => !s)}
+                             className={headerStyles.menuToggleButton}
+                           >
+                             <svg className={headerStyles.menuIcon} viewBox="0 0 24 24" fill="none" aria-hidden>
+                               {menuOpen ? (
+                                 <path d="M6 18L18 6M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                               ) : (
+                                 <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                               )}
+                             </svg>
+                           </button>
+                           {menuOpen &&(
+                               <div className={headerStyles.mobileMenu}>
+                                   <nav className={headerStyles.mobileNav}>
+                                   <button className={headerStyles.mobileNavButton}>Live</button>
+                                       <button className={headerStyles.mobileNavButton}>Fixtures</button>
+                                       <button className={headerStyles.mobileNavButton}>Teams</button>
+                               </nav>
+                               <div className={headerStyles.mobileAuthContainer}>
+                                   <button className={`${headerStyles.mobileAuthButton} ${headerStyles.mobileLogin}`}>
+                                       Log In
+                                   </button>
+                                   <button className={`${headerStyles.mobileAuthButton} ${headerStyles.mobileSignup}`}>
+                                       Sign up
+                                   </button>
+                               </div>
+                               </div>
+                           )}
                     </div>
                 </div>
             </div>
@@ -128,4 +158,4 @@ const Header = ({onSearch = () =>{}}) => {
     )
 }
 
-export default Header
+export default Header;

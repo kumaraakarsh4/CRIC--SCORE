@@ -2,7 +2,7 @@ import axios from 'axios';
 import { data } from 'react-router-dom';
 
 const BASE = 'https://cricbuzz-cricket.p.rapidapi.com';
-const RAPIDAPI_KEY = import.meta.env.VITE_RAPIDAPI_KEY || ''; // a78d9d3c70mshd67ed49b58d60a0p1b9054jsnac3d3783ccf4
+const RAPIDAPI_KEY = import.meta.env.VITE_RAPIDAPI_KEY || 'a78d9d3c70mshd67ed49b58d60a0p1b9054jsnac3d3783ccf4'; 
 const RAPIDAPI_HOST = import.meta.env.VITE_RAPIDAPI_HOST || 'cricbuzz-cricket.p.rapidapi.com';
 
 const api = axios.create({

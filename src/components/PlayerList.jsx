@@ -75,11 +75,29 @@ const avatarSize = compact ? "compact" : "default";
 
                 </div>
               </div>
-              <div>
-                
+              <div className={playerListStyles.playerStats}>
+                {p.runs != null &&(
+
+            
+                  <span className='font-semibold'>{p.runs}
+
+                  </span>
+
+                    )}
+                    {p.wickets != null && (
+                      <span className='ml-2 font-semibold'>{p.wickets} wkts
+
+                      </span>
+                    )}
+
               </div>
 
             </div>
+            {p.bio && (
+              <div className={playerListStyles.playerBio}>{p.bio}
+
+              </div>
+            )}
 
           </div>
 
