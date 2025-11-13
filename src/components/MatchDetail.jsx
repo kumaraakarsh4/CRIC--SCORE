@@ -1,6 +1,9 @@
-import React , {useState} from 'react'
+import React , {useState,useCallback} from 'react'
 import { getMatchCenter,getScard, getHscard } from '../api/cricApi'
 import { matchDetailStyles } from '../assets/dummyStyles'
+import ScoreCard from './Scorecard';
+import Scoreboard from './Scoreboard';
+import PlayerList from './PlayerList';
 
 const MatchDetail = ({matchId, className = ''}) => {
       const [center, setCenter] = useState(null);
@@ -177,12 +180,83 @@ const MatchDetail = ({matchId, className = ''}) => {
                         {loading ? "Refreshing..." : "Refresh"}
 
                     </button>
+                    <button onClick={()=> setShowRaw((s)=>!s)} className={matchDetailStyles.rawToggleButton}>
+                      {showRaw ? "Hide raw" : "Show raw"}
+
+                    </button>
 
                 </div>
             </div>
 
         </div>
+         {loading ? (
+          <div className={matchDetailStyles.loadingContainer}>
+            <Loader message="Loading match details"/>
 
+          </div>
+         ) : error ? (
+          <div className={matchDetailStyles.errorContainer}>
+            Error : {error}
+
+          </div>
+         ) :(
+          <div className={matchDetailStyles.mainGrid}>
+            <div className={matchDetailStyles.leftColumn}>
+              <ScoreCard innings={innings}/>
+              <div className={matchDetailStyles.scoreboardContainer}>
+                <Scoreboard  matchId={String(matchId)}/>
+
+                </div>
+                
+            {showRaw && (
+              <div className={matchDetailStyles.rawDataContainer}>
+                <div className={matchDetailStyles.rawDataTitle}>Raw payloads</div>
+                <div className={matchDetailStyles.rawDataSectionTitle}>center:</div>
+                <pre className={matchDetailStyles.rawDataPre}>{JSON.stringify(center || {}, null, 2)}</pre>
+                <div className={matchDetailStyles.rawDataSectionTitle}>scard (normalized/raw):</div>
+                <pre className={matchDetailStyles.rawDataPre}>{JSON.stringify(scard || {}, null, 2)}</pre>
+                <div className={matchDetailStyles.rawDataSectionTitle}>hscard (raw):</div>
+                <pre className={matchDetailStyles.rawDataPre}>{JSON.stringify(hscard || {}, null, 2)}</pre>
+              </div>
+            )}
+
+            </div>
+            <aside className={matchDetailStyles.sidebarContainer}>
+              <div className={matchDetailStyles.summaryCard}>
+                <div className={matchDetailStyles.summaryTitle}>
+                  Match Summary
+
+                </div>
+                <div className={matchDetailStyles.summaryText}>
+               {(center && center.match?.status) || (hscard && hscard.status) || (scard && scard.status) || "-" }
+                </div>
+                {center?.match?.venueinfo && (
+                  <div className={matchDetailStyles.venueText}>
+                    {center.match.venueinfo.ground}  •{" "}
+                    {center.match.venueinfo.city}
+
+                  </div>
+                )}
+
+              </div>
+              <div className={matchDetailStyles.playersCard}>
+                <div className={matchDetailStyles.playersTitle}>
+                  Players
+
+                </div>
+                <PlayerList player={players} onselect={(p)=> console.log('Player selected' , p)
+                } compact /> {(!players || players.length === 0) && (
+                  <div className={matchDetailStyles.noPlayersText}> No Player data available
+
+                  </div>
+                )}
+
+              </div>
+
+            </aside>
+
+          </div>
+         )}
     </div>
   )
 }
