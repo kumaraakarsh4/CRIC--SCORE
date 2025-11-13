@@ -49,8 +49,16 @@ const avatarSize = compact ? "compact" : "default";
         <button key={p.id || p.name} onClick={()=>onSelect && onselect(p)} className={playerListStyles.playerItem}>
           <div className={playerListStyles.avatarContainer}>
             <div style={{
-              
+              width : compact ? avatarSizes.compact.width : avatarSizes.default.width,
+              height : compact ? avatarSizes.compact.height : avatarSizes.default.height,
             }}>
+              {p.imgUrl ? (
+                <img src={p.imgUrl} alt={p.name} className={playerListStyles.avatarImage} />
+              ) :(
+                <div>
+                  
+                </div>
+              )}
 
             </div>
 
