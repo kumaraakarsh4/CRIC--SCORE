@@ -55,10 +55,29 @@ const avatarSize = compact ? "compact" : "default";
               {p.imgUrl ? (
                 <img src={p.imgUrl} alt={p.name} className={playerListStyles.avatarImage} />
               ) :(
-                <div>
-                  
+                <div className={playerListStyles.avatarFallback}>
+                   {(p.name || '?').split(' ').map(n => n[0]).slice(0,2).join('').toUpperCase()}
+
                 </div>
               )}
+
+            </div>
+
+          </div>
+          <div className={playerListStyles.playerInfo}>
+            <div className={playerListStyles.playerMainInfo}>
+              <div>
+                <div className={playerListStyles.playerName}>{p.name}
+
+                </div>
+                <div className={playerListStyles.playerDetails}>{p.role || p.position || ''}
+                  {p.country ? ` •${p.country}` : ""}
+
+                </div>
+              </div>
+              <div>
+                
+              </div>
 
             </div>
 
