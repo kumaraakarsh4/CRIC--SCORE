@@ -34,8 +34,30 @@ return (
 }
 
 const PlayerList = ({ players = [], onSelect, compact = false }) => {
+if(!Array.isArray(players) || players.length === 0){
+  return(
+    <div className={playerListStyles.noPlayersContainer}> No Player to show
+
+    </div>
+  );
+}
+// for compact avtar icon 
+const avatarSize = compact ? "compact" : "default";
   return (
-    <div>
+    <div className={playerListStyles.listContainer}>
+      {players.map((p)=>(
+        <button key={p.id || p.name} onClick={()=>onSelect && onselect(p)} className={playerListStyles.playerItem}>
+          <div className={playerListStyles.avatarContainer}>
+            <div style={{
+              
+            }}>
+
+            </div>
+
+          </div>
+
+        </button>
+      ))}
         
     </div>
   )
